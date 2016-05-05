@@ -1,32 +1,120 @@
 package com.lpzahd.lpzahd.activity.loading;
 
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
+import android.content.Context;
+import android.content.res.AssetManager;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
-import com.lpzahd.lpzahd.util.img.DrawableUtil;
+import com.lpzahd.lpzahd.app.App;
+import com.lpzahd.lpzahd.constance.Constances;
+import com.lpzahd.lpzahd.util.ContextUtil;
+import com.lpzahd.lpzahd.util.ToastUtil;
 
-public class LoadingActivity extends AppBaseActivity{
+import java.io.File;
+import java.io.IOException;
 
-    private ImageView photos;
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
+public class LoadingActivity extends AppBaseActivity {
+
+    @BindView(R.id.headViewPager)
+    ViewPager headViewPager;
+
+    private AssetManager asset;
+
+    private String[] imgs;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
+        ButterKnife.bind(this);
 
-        findView();
+        justDoViewPager();
     }
 
-    private void findView() {
-        photos = (ImageView) findViewById(R.id.photos);
 
-//        photos.setImageResource(R.mipmap.img_head_01);
-        Drawable head = DrawableUtil.createCircleDrawable(BitmapFactory.decodeResource(getResources(), R.mipmap.img_head_01));
-        Log.e("hit","head : " + head);
-        photos.setImageDrawable(head);
+    private void justDoViewPager() {
+        asset = ContextUtil.getAssets();
+        imgs = getHeadImgs(asset);
+
+        if(imgs == null || imgs.length == 0) {
+            ToastUtil.showToast("how can u do that to her!");
+            return ;
+        }
+
+
     }
 
+    /**
+     * 获取assets下的所有头像
+     * @return
+     */
+    private String[] getHeadImgs(AssetManager manager) {
+        String[] imgFiles = null;
+        try {
+            imgFiles = manager.list(Constances.Assets.HEAD_IMG);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return imgFiles;
+    }
+
+
+
+    public class HeaderPagerAdapter extends PagerAdapter {
+
+        public int convertViewCount = 5;
+
+        private View[] convertViews;
+
+        private Context context;
+
+        public HeaderPagerAdapter(Context context) {
+            this.context = context;
+
+            initConvertView();
+        }
+
+        private void initConvertView() {
+            if(convertViews == null || convertViews.length < convertViewCount) {
+                convertViews = new View[convertViewCount];
+                for (int i = 0; i < convertViewCount; i++) {
+                    convertViews[i] = new ImageView(context);
+                }
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return imgs.length;
+        }
+
+        @Override
+        public boolean isViewFromObject(View view, Object object) {
+            return false;
+        }
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            int showViewPosition = position % convertViewCount;
+            ImageView headView = (ImageView) convertViews[showViewPosition];
+            return headView;
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        asset.close();
+    }
 }

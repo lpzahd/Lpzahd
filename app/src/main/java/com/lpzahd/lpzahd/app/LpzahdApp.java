@@ -19,7 +19,7 @@ public class LpzahdApp extends Application{
 
         x.Ext.init(this);
 
-        AutoLayoutConifg.getInstance().useDeviceSize();
+//        AutoLayoutConifg.getInstance().useDeviceSize();
     }
 
 }

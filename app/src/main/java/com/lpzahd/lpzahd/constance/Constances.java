@@ -12,4 +12,8 @@ public class Constances {
         public final static String NICKS = OUT_RULE_STR + "nicks";
         public final static String PASSWORD = OUT_RULE_STR + "password";
     }
+
+    public static class Assets {
+        public final static String HEAD_IMG = "img_heads";
+    }
 }
