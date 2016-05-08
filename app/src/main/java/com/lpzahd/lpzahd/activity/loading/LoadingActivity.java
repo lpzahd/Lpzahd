@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -14,12 +16,18 @@ import android.widget.ImageView;
 
 import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
+import com.lpzahd.lpzahd.anim.viewpage.ZoomOutTranformer;
+import com.lpzahd.lpzahd.app.UserView;
 import com.lpzahd.lpzahd.constance.Constances;
+import com.lpzahd.lpzahd.help.ImgHelper;
+import com.lpzahd.lpzahd.manager.cache.ImgCacheManager;
 import com.lpzahd.lpzahd.util.ContextUtil;
-import com.lpzahd.lpzahd.util.TaskUtil;
 import com.lpzahd.lpzahd.util.ToastUtil;
+import com.lpzahd.lpzahd.util.img.BitmapUtil;
+import com.lpzahd.lpzahd.util.img.DrawableUtil;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -37,10 +45,10 @@ public class LoadingActivity extends AppBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_loading);
-        ButterKnife.setDebug(true);
         ButterKnife.bind(this);
 
         justDoViewPager();
+        UserView.createInstance();
     }
 
 
@@ -48,20 +56,20 @@ public class LoadingActivity extends AppBaseActivity {
         asset = ContextUtil.getAssets();
         imgs = getHeadImgs(asset);
 
-        if(imgs == null || imgs.length == 0) {
+        if (imgs == null || imgs.length == 0) {
             ToastUtil.showToast("how can u do that to her!");
-            return ;
+            return;
         }
 
-        Log.e("hit","headViewPager : " + headViewPager);
-        Log.e("hit","headViewPager : " + findViewById(R.id.headViewPager));
-
+        headViewPager.setOverScrollMode(ViewPager.OVER_SCROLL_NEVER);
         HeaderPagerAdapter headerPagerAdapter = new HeaderPagerAdapter(this);
         headViewPager.setAdapter(headerPagerAdapter);
+        headViewPager.setPageTransformer(true, new ZoomOutTranformer());
     }
 
     /**
      * 获取assets下的所有头像
+     *
      * @return
      */
     private String[] getHeadImgs(AssetManager manager) {
@@ -76,28 +84,11 @@ public class LoadingActivity extends AppBaseActivity {
 
     public class HeaderPagerAdapter extends PagerAdapter {
 
-        public int convertViewCount = 5;
-
-        private View[] convertViews;
-
         private Context context;
-
 
         public HeaderPagerAdapter(Context context) {
             this.context = context;
-
-            initConvertView();
         }
-
-        private void initConvertView() {
-            if(convertViews == null || convertViews.length < convertViewCount) {
-                convertViews = new View[convertViewCount];
-                for (int i = 0; i < convertViewCount; i++) {
-                    convertViews[i] = new ImageView(context);
-                }
-            }
-        }
-
 
         @Override
         public int getCount() {
@@ -106,30 +97,53 @@ public class LoadingActivity extends AppBaseActivity {
 
         @Override
         public boolean isViewFromObject(View view, Object object) {
-            return false;
+            return (view == object);
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            container.removeView((View) object);
         }
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
-            int showViewPosition = position % convertViewCount;
-            ImageView headView = (ImageView) convertViews[showViewPosition];
+            ImageView headView = new ImageView(context);
             Bitmap bitmap = null;
-            try {
-                bitmap = BitmapFactory.decodeStream(asset.open(imgs[position]));
-            } catch (IOException e) {
-                e.printStackTrace();
+            bitmap = ImgCacheManager.getImgCacheManager().getBitmap(this.getClass().getName() + "_" + imgs[position]);
+            if(bitmap == null) {
+                InputStream in = null;
+                try {
+                    in = asset.open(Constances.Assets.HEAD_IMG + "/" + imgs[position]);
+                    BitmapFactory.Options options = ImgHelper.i().sampleOptions(in, new int[]{300, 300});
+                    bitmap = BitmapFactory.decodeStream(in, null, options);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    if (in != null) {
+                        try {
+                            in.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                Drawable drawable = null;
+                if (bitmap != null) {
+                    bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+                    drawable = DrawableUtil.createCircleDrawable(bitmap);
+                    bitmap = BitmapUtil.drawableToBitmap(drawable);
+                    ImgCacheManager.getImgCacheManager().putBitmap(this.getClass().getName() + "_" + imgs[position], bitmap);
+                }
             }
             headView.setImageBitmap(bitmap);
+            if (headView.getParent() == null) {
+                container.addView(headView);
+            }
             return headView;
         }
 
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        asset.close();
-    }
 
 }
