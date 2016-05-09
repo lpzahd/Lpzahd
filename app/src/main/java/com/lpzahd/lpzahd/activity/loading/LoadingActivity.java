@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
@@ -20,6 +21,7 @@ import com.lpzahd.lpzahd.anim.viewpage.ZoomOutTranformer;
 import com.lpzahd.lpzahd.app.UserView;
 import com.lpzahd.lpzahd.constance.Constances;
 import com.lpzahd.lpzahd.help.ImgHelper;
+import com.lpzahd.lpzahd.help.StringHelper;
 import com.lpzahd.lpzahd.manager.cache.ImgCacheManager;
 import com.lpzahd.lpzahd.util.ContextUtil;
 import com.lpzahd.lpzahd.util.ToastUtil;
@@ -41,6 +43,8 @@ public class LoadingActivity extends AppBaseActivity {
 
     private String[] imgs;
 
+    private UserView it;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +52,7 @@ public class LoadingActivity extends AppBaseActivity {
         ButterKnife.bind(this);
 
         justDoViewPager();
-        UserView.createInstance();
+        it = UserView.getIt();
     }
 
 
@@ -65,6 +69,7 @@ public class LoadingActivity extends AppBaseActivity {
         HeaderPagerAdapter headerPagerAdapter = new HeaderPagerAdapter(this);
         headViewPager.setAdapter(headerPagerAdapter);
         headViewPager.setPageTransformer(true, new ZoomOutTranformer());
+
     }
 
     /**
@@ -83,6 +88,8 @@ public class LoadingActivity extends AppBaseActivity {
     }
 
     public class HeaderPagerAdapter extends PagerAdapter {
+
+        public final String TAG = this.getClass().getName();
 
         private Context context;
 
@@ -109,7 +116,8 @@ public class LoadingActivity extends AppBaseActivity {
         public Object instantiateItem(ViewGroup container, int position) {
             ImageView headView = new ImageView(context);
             Bitmap bitmap = null;
-            bitmap = ImgCacheManager.getImgCacheManager().getBitmap(this.getClass().getName() + "_" + imgs[position]);
+            final String imgPath = StringHelper.stitchStr(TAG, imgs[position]);
+            bitmap = ImgCacheManager.getImgCacheManager().getBitmap(imgPath);
             if(bitmap == null) {
                 InputStream in = null;
                 try {
@@ -133,9 +141,17 @@ public class LoadingActivity extends AppBaseActivity {
                     bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
                     drawable = DrawableUtil.createCircleDrawable(bitmap);
                     bitmap = BitmapUtil.drawableToBitmap(drawable);
-                    ImgCacheManager.getImgCacheManager().putBitmap(this.getClass().getName() + "_" + imgs[position], bitmap);
+                    ImgCacheManager.getImgCacheManager().putBitmap(imgPath, bitmap);
                 }
             }
+
+            headView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    it.replaceHead(ImgCacheManager.getImgCacheManager().getBitmap(imgPath));
+                }
+            });
+
             headView.setImageBitmap(bitmap);
             if (headView.getParent() == null) {
                 container.addView(headView);
@@ -144,6 +160,5 @@ public class LoadingActivity extends AppBaseActivity {
         }
 
     }
-
 
 }
