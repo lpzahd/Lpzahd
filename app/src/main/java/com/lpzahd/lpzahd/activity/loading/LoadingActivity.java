@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.graphics.Palette;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,8 +37,13 @@ import butterknife.ButterKnife;
 
 public class LoadingActivity extends AppBaseActivity {
 
+    @BindView(R.id.parent)
+    View parent;
+
     @BindView(R.id.headViewPager)
     ViewPager headViewPager;
+
+    private HeaderPagerAdapter headerPagerAdapter;
 
     private AssetManager asset;
 
@@ -66,10 +72,45 @@ public class LoadingActivity extends AppBaseActivity {
         }
 
         headViewPager.setOverScrollMode(ViewPager.OVER_SCROLL_NEVER);
-        HeaderPagerAdapter headerPagerAdapter = new HeaderPagerAdapter(this);
+        headerPagerAdapter = new HeaderPagerAdapter(this);
         headViewPager.setAdapter(headerPagerAdapter);
         headViewPager.setPageTransformer(true, new ZoomOutTranformer());
 
+
+        headViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                String imgPath = StringHelper.stitchStr(headerPagerAdapter.TAG, imgs[position]);
+                Bitmap bitmap = ImgCacheManager.getImgCacheManager().getBitmap(imgPath);
+
+                if(bitmap != null) {
+                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                        @Override
+                        public void onGenerated(Palette palette) {
+                            int lightColor = getResources().getColor(android.R.color.holo_blue_light);
+                            int darkColor = getResources().getColor(android.R.color.background_dark);
+                            int color = palette.getLightMutedColor(lightColor);
+
+                            if(color == lightColor) {
+                                color = palette.getDarkMutedColor(darkColor);
+                            }
+                            parent.setBackgroundColor(color);
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 
     /**
