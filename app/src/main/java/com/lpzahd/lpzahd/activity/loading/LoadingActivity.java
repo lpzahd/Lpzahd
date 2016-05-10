@@ -5,29 +5,23 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.AppCompatButton;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-
-import com.github.johnpersano.supertoasts.SuperToast;
 import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
+import com.lpzahd.lpzahd.activity.main.MainActivity;
 import com.lpzahd.lpzahd.anim.viewpage.ZoomOutTranformer;
 import com.lpzahd.lpzahd.app.UserView;
 import com.lpzahd.lpzahd.constance.Constances;
@@ -40,7 +34,6 @@ import com.lpzahd.lpzahd.util.ToastUtil;
 import com.lpzahd.lpzahd.util.img.BitmapUtil;
 import com.lpzahd.lpzahd.util.img.DrawableUtil;
 import com.zhy.autolayout.utils.AutoUtils;
-
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -166,7 +159,12 @@ public class LoadingActivity extends AppBaseActivity {
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                Log.e("hit","end");
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        startActivity(new Intent(getContext(), MainActivity.class));
+                    }
+                });
             }
         });
     }
@@ -194,8 +192,8 @@ public class LoadingActivity extends AppBaseActivity {
      * @return
      */
     private Animator scaleXAnim() {
-        int progressWidth = AutoUtils.getPercentWidthSize(720);
-        int buttonWidth = AutoUtils.getPercentWidthSize(300);
+        final int progressWidth = AutoUtils.getPercentWidthSize(720);
+        final int buttonWidth = AutoUtils.getPercentWidthSize(300);
         final float minScaleX = (float)buttonWidth / (float)progressWidth - 0.05f;
         ValueAnimator anim = ValueAnimator.ofFloat(1.0f, minScaleX);
         anim.setDuration(3000);
@@ -269,6 +267,8 @@ public class LoadingActivity extends AppBaseActivity {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
+            final int imgSize = AutoUtils.getPercentWidthSize(300);
+
             ImageView headView = new ImageView(context);
             Bitmap bitmap = null;
             final String imgPath = StringHelper.stitchStr(TAG, imgs[position]);
@@ -277,7 +277,7 @@ public class LoadingActivity extends AppBaseActivity {
                 InputStream in = null;
                 try {
                     in = asset.open(Constances.Assets.HEAD_IMG + "/" + imgs[position]);
-                    BitmapFactory.Options options = ImgHelper.i().sampleOptions(in, new int[]{300, 300});
+                    BitmapFactory.Options options = ImgHelper.i().sampleOptions(in, new int[]{imgSize, imgSize});
                     bitmap = BitmapFactory.decodeStream(in, null, options);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -293,7 +293,7 @@ public class LoadingActivity extends AppBaseActivity {
 
                 Drawable drawable = null;
                 if (bitmap != null) {
-                    bitmap = Bitmap.createScaledBitmap(bitmap, 300, 300, true);
+                    bitmap = Bitmap.createScaledBitmap(bitmap, imgSize, imgSize, true);
                     drawable = DrawableUtil.createCircleDrawable(bitmap);
                     bitmap = BitmapUtil.drawableToBitmap(drawable);
                     ImgCacheManager.getImgCacheManager().putBitmap(imgPath, bitmap);

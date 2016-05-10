@@ -30,7 +30,7 @@
     </com.zhy.autolayout.AutoFrameLayout>
 
 
-    <RelativeLayout
+    <com.zhy.autolayout.AutoRelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -46,11 +46,11 @@
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/button"
             android:layout_width="300px"
-            android:layout_height="100px"
+            android:layout_height="120px"
             android:text="start"
             android:rotationX="90"
             android:layout_centerHorizontal="true"/>
 
-    </RelativeLayout>
+    </com.zhy.autolayout.AutoRelativeLayout>
 
 </com.zhy.autolayout.AutoRelativeLayout>
