@@ -29,4 +29,28 @@
 
     </com.zhy.autolayout.AutoFrameLayout>
 
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="36dp">
+
+        <android.support.v4.widget.ContentLoadingProgressBar
+            android:id="@+id/progress"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/button"
+            android:layout_width="300px"
+            android:layout_height="100px"
+            android:text="start"
+            android:rotationX="90"
+            android:layout_centerHorizontal="true"/>
+
+    </RelativeLayout>
+
 </com.zhy.autolayout.AutoRelativeLayout>

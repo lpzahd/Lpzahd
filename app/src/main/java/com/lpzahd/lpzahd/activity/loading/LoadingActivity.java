@@ -1,5 +1,9 @@
 package com.lpzahd.lpzahd.activity.loading;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
@@ -11,11 +15,17 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.graphics.Palette;
+import android.support.v7.widget.AppCompatButton;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationSet;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
+import com.github.johnpersano.supertoasts.SuperToast;
 import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
 import com.lpzahd.lpzahd.anim.viewpage.ZoomOutTranformer;
@@ -25,9 +35,11 @@ import com.lpzahd.lpzahd.help.ImgHelper;
 import com.lpzahd.lpzahd.help.StringHelper;
 import com.lpzahd.lpzahd.manager.cache.ImgCacheManager;
 import com.lpzahd.lpzahd.util.ContextUtil;
+import com.lpzahd.lpzahd.util.TaskUtil;
 import com.lpzahd.lpzahd.util.ToastUtil;
 import com.lpzahd.lpzahd.util.img.BitmapUtil;
 import com.lpzahd.lpzahd.util.img.DrawableUtil;
+import com.zhy.autolayout.utils.AutoUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +54,12 @@ public class LoadingActivity extends AppBaseActivity {
 
     @BindView(R.id.headViewPager)
     ViewPager headViewPager;
+
+    @BindView(R.id.progress)
+    ProgressBar progress;
+
+    @BindView(R.id.button)
+    AppCompatButton button;
 
     private HeaderPagerAdapter headerPagerAdapter;
 
@@ -58,7 +76,17 @@ public class LoadingActivity extends AppBaseActivity {
         ButterKnife.bind(this);
 
         justDoViewPager();
+
+        TaskUtil.task().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                paletteBackground(0);
+            }
+        }, 200);
+
         it = UserView.getIt();
+
+        stepTrilogyProgress();
     }
 
 
@@ -81,29 +109,11 @@ public class LoadingActivity extends AppBaseActivity {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
             }
 
             @Override
             public void onPageSelected(int position) {
-                String imgPath = StringHelper.stitchStr(headerPagerAdapter.TAG, imgs[position]);
-                Bitmap bitmap = ImgCacheManager.getImgCacheManager().getBitmap(imgPath);
-
-                if(bitmap != null) {
-                    Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-                        @Override
-                        public void onGenerated(Palette palette) {
-                            int lightColor = getResources().getColor(android.R.color.holo_blue_light);
-                            int darkColor = getResources().getColor(android.R.color.background_dark);
-                            int color = palette.getLightMutedColor(lightColor);
-
-                            if(color == lightColor) {
-                                color = palette.getDarkMutedColor(darkColor);
-                            }
-                            parent.setBackgroundColor(color);
-                        }
-                    });
-                }
+                paletteBackground(position);
             }
 
             @Override
@@ -111,6 +121,110 @@ public class LoadingActivity extends AppBaseActivity {
 
             }
         });
+    }
+
+    /**
+     * 根据当前viewpager 显示图片获取其色调设置为当前的背景色
+     * @param position
+     */
+    private void paletteBackground(int position) {
+        String imgPath = StringHelper.stitchStr(headerPagerAdapter.TAG, imgs[position]);
+        Bitmap bitmap = ImgCacheManager.getImgCacheManager().getBitmap(imgPath);
+
+        if(bitmap != null) {
+            Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
+                @Override
+                public void onGenerated(Palette palette) {
+                    int lightColor = getResources().getColor(android.R.color.holo_blue_light);
+                    int darkColor = getResources().getColor(android.R.color.background_dark);
+                    int color = palette.getLightMutedColor(lightColor);
+
+                    if(color == lightColor) {
+                        color = palette.getDarkMutedColor(darkColor);
+                    }
+                    parent.setBackgroundColor(color);
+                }
+            });
+        }
+    }
+
+
+    /**
+     * progress动画三部曲
+     */
+    private void stepTrilogyProgress() {
+        AnimatorSet animSet = new AnimatorSet();
+
+        Animator a1 = setProgressAnim();
+        Animator a2 = scaleXAnim();
+        Animator a3 = rotationYAnim();
+        animSet.play(a1);
+        animSet.play(a2).after(a1);
+        animSet.play(a3).after(a2);
+        animSet.start();
+
+        animSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                Log.e("hit","end");
+            }
+        });
+    }
+
+    /**
+     * 设置progress 进度动画(不算动画)
+     * @return
+     */
+    private Animator setProgressAnim() {
+        ValueAnimator anim = ValueAnimator.ofInt(0, 100);
+        anim.setDuration(3000);
+        progress.setMax(100);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                Integer value = (Integer) animation.getAnimatedValue();
+                progress.setProgress(value);
+            }
+        });
+        return anim;
+    }
+
+    /**
+     * 缩放progress x方向的动画
+     * @return
+     */
+    private Animator scaleXAnim() {
+        int progressWidth = AutoUtils.getPercentWidthSize(720);
+        int buttonWidth = AutoUtils.getPercentWidthSize(300);
+        final float minScaleX = (float)buttonWidth / (float)progressWidth - 0.05f;
+        ValueAnimator anim = ValueAnimator.ofFloat(1.0f, minScaleX);
+        anim.setDuration(3000);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float value = (float) animation.getAnimatedValue();
+                progress.setScaleX(value);
+            }
+        });
+        return anim;
+    }
+
+    /**
+     * button Y方向的旋转动画
+     * @return
+     */
+    private Animator rotationYAnim() {
+        ValueAnimator anim = ValueAnimator.ofInt(90, 0);
+        anim.setDuration(2000);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int value = (int) animation.getAnimatedValue();
+                button.setRotationX(value);
+
+            }
+        });
+        return anim;
     }
 
     /**
