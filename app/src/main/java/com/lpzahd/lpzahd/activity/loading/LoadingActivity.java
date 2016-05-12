@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
-import com.lpzahd.lpzahd.activity.main.MainActivity;
+import com.lpzahd.lpzahd.activity.main.GuideActivity;
 import com.lpzahd.lpzahd.anim.viewpage.ZoomOutTranformer;
 import com.lpzahd.lpzahd.app.UserView;
 import com.lpzahd.lpzahd.constance.Constances;
@@ -41,6 +41,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class LoadingActivity extends AppBaseActivity {
+
+    public static boolean closeAnim = true;
+
+    private static boolean isAnimOver = true;
 
     @BindView(R.id.parent)
     View parent;
@@ -79,7 +83,22 @@ public class LoadingActivity extends AppBaseActivity {
 
         it = UserView.getIt();
 
-        stepTrilogyProgress();
+        if(closeAnim) {
+            progress.setVisibility(View.GONE);
+        } else {
+            isAnimOver = false;
+            button.setRotationX(90);
+            stepTrilogyProgress();
+        }
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(isAnimOver) {
+                    startActivity(new Intent(getContext(), GuideActivity.class));
+                }
+            }
+        });
     }
 
 
@@ -159,12 +178,7 @@ public class LoadingActivity extends AppBaseActivity {
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                button.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(getContext(), MainActivity.class));
-                    }
-                });
+                isAnimOver = true;
             }
         });
     }

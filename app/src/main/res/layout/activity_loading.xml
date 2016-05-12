@@ -48,7 +48,6 @@
             android:layout_width="300px"
             android:layout_height="120px"
             android:text="start"
-            android:rotationX="90"
             android:layout_centerHorizontal="true"/>
 
     </com.zhy.autolayout.AutoRelativeLayout>
