@@ -12,6 +12,7 @@ import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
 import com.lpzahd.lpzahd.widget.chiemy.CardAdapter;
 import com.lpzahd.lpzahd.widget.chiemy.CardView;
+import com.zhy.autolayout.utils.AutoUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -78,6 +79,7 @@ public class GuideActivity extends AppBaseActivity implements CardView.OnCardCli
             super(context, items);
 
             mInflater = LayoutInflater.from(context);
+
         }
 
         @Override
@@ -94,6 +96,9 @@ public class GuideActivity extends AppBaseActivity implements CardView.OnCardCli
                 convertView =  mInflater.inflate(R.layout.item_guide, parent, false);
                 holder = new ViewHolder(convertView);
                 convertView.setTag(holder);
+
+                //对于listview，注意添加这一行，即可在item上使用高度
+                AutoUtils.autoSize(convertView);
             } else {
                 holder = (ViewHolder) convertView.getTag();
             }

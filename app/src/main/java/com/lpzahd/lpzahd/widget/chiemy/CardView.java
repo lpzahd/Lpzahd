@@ -135,7 +135,7 @@ public class CardView extends FrameLayout {
 
             // 添加剩余的View时，始终处在最后
             index = Math.min(mNextAdapterPosition, mMaxVisible - 1);
-            ViewHelper.setScaleX(view,((mMaxVisible - index - 1) / (float) mMaxVisible) * 0.2f + 0.8f);
+            ViewHelper.setScaleX(view,getChildScaleX(index));
             int topMargin = (mMaxVisible - index - 1) * itemSpace;
             ViewHelper.setTranslationY(view, topMargin);
             ViewHelper.setAlpha(view, mNextAdapterPosition == 0 ? 1 : 0.5f);
@@ -150,6 +150,15 @@ public class CardView extends FrameLayout {
             mNextAdapterPosition += 1;
         }
         // requestLayout();
+    }
+
+    /**
+     * 获取每层child的缩放尺寸
+     * @param childIndex
+     * @return
+     */
+    private float getChildScaleX(int childIndex) {
+        return ((mMaxVisible - childIndex - 1) / (float) mMaxVisible) * 0.2f + 0.8f;
     }
 
     @Override
@@ -228,7 +237,7 @@ public class CardView extends FrameLayout {
                         final int topMargin = (mMaxVisible - 1) * itemSpace;
                         ViewPropertyAnimator
                                 .animate(topView)
-                                .translationY(topMargin).scaleX(1)
+                                .translationY(topMargin).scaleX(getChildScaleX(0))
                                 .setListener(null).setDuration(400);
                     } else {
                         goDown();
@@ -242,7 +251,7 @@ public class CardView extends FrameLayout {
     /**
      * 下移所有视图
      */
-    private ViewPropertyAnimator goDown() {
+    private boolean goDown() {
         final View topView = getChildAt(getChildCount() - 1);
         topView.setEnabled(false);
         ViewPropertyAnimator anim = ViewPropertyAnimator
@@ -281,7 +290,7 @@ public class CardView extends FrameLayout {
                 }
             }
         });
-        return anim;
+        return true;
     }
 
     /**
