@@ -1,15 +1,23 @@
 package com.lpzahd.lpzahd.activity.main;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.andexert.library.RippleView;
 import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
+import com.lpzahd.lpzahd.activity.rx.RxActivity;
 import com.lpzahd.lpzahd.widget.chiemy.CardAdapter;
 import com.lpzahd.lpzahd.widget.chiemy.CardView;
 import com.zhy.autolayout.utils.AutoUtils;
@@ -18,24 +26,61 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by Administrator on 2016/5/12.
  */
-public class GuideActivity extends AppBaseActivity implements CardView.OnCardClickListener {
+public class GuideActivity extends AppBaseActivity implements View.OnClickListener {
+
+    @BindView(R.id.cardview)
+    CardView cardView;
+
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_2main);
+        setContentView(R.layout.activity_guide);
+        ButterKnife.bind(this);
+
         initUI();
     }
 
     private void initUI() {
-        CardView cardView = (CardView) findViewById(R.id.cardView1);
-        cardView.setOnCardClickListener(this);
+        initCardView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initFab();
+    }
+
+    private void initFab() {
+        ObjectAnimator anim = ObjectAnimator.ofFloat(fab, "alpha", 0f, 1.0f);
+        anim.setDuration(2000);
+        anim.start();
+        anim.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                fab.setOnClickListener(GuideActivity.this);
+            }
+        });
+    }
+
+    private void initCardView() {
+//        cardView.setOnCardClickListener(this);
+//        cardView.setMaxVisibleCount(4);
         cardView.setItemSpace(Utils.convertDpToPixelInt(this, 20));
 
         List<GuideBean> lists = new ArrayList<GuideBean>();
+        GuideBean rxAndroid = new GuideBean();
+        rxAndroid.title = "RxAndroid Test";
+        lists.add(rxAndroid);
+
         for(int i = 0 ; i < 20 ;  i++) {
             GuideBean bean = new GuideBean();
             bean.title = "tab : " + i;
@@ -56,8 +101,11 @@ public class GuideActivity extends AppBaseActivity implements CardView.OnCardCli
     }
 
     @Override
-    public void onCardClick(View view, int position) {
+    public void onClick(View v) {
+        int id = v.getId();
+        if(id == R.id.fab) {
 
+        }
     }
 
     public class GuideBean {
@@ -104,16 +152,36 @@ public class GuideActivity extends AppBaseActivity implements CardView.OnCardCli
             }
 
             holder.guideTitle.setText(mData.get(position).title);
+            holder.ripple.setOnClickListener(new CardClickListener(position));
 
             return convertView;
+        }
+
+    }
+
+    public class CardClickListener implements View.OnClickListener {
+
+        private int position;
+
+        public CardClickListener(int position) {
+            this.position = position;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if(position == 0) {
+                startActivity(new Intent(GuideActivity.this, RxActivity.class));
+            }
         }
     }
 
     public class ViewHolder {
         public TextView guideTitle;
+        public RippleView ripple;
 
         public ViewHolder(View v) {
             guideTitle = (TextView) v.findViewById(R.id.guideTitle);
+            ripple = (RippleView) v.findViewById(R.id.ripple);
         }
     }
 }

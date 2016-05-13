@@ -232,7 +232,7 @@ public class CardView extends FrameLayout {
 
                     // 如果拖动范围小于view本身一半则回复状态
                     float tranY = ViewHelper.getTranslationY(topView);
-                    int minHeight = topView.getHeight() / 2;
+                    int minHeight = topView.getHeight() / 3;
                     if(tranY < minHeight) {
                         final int topMargin = (mMaxVisible - 1) * itemSpace;
                         ViewPropertyAnimator
@@ -443,7 +443,7 @@ public class CardView extends FrameLayout {
         //mMaxVisible 页面最大显示child数量
         //itemSpace  child之间的间距
         int index = (int) (pointF.y / itemSpace);
-        int tIndex = mMaxVisible - 1- index;
+        int tIndex = mMaxVisible - index;
         return tIndex > 0 ? tIndex : 0;
     }
 

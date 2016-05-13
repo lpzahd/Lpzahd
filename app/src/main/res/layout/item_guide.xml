@@ -6,7 +6,7 @@
     >
 
     <com.andexert.library.RippleView
-        android:id="@+id/more"
+        android:id="@+id/ripple"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#238e23"
@@ -17,7 +17,6 @@
             android:layout_width="600px"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Content"
             android:textSize="60px"
             android:gravity="center"
             android:paddingTop="24px"

@@ -20,6 +20,8 @@ import com.readystatesoftware.systembartint.SystemBarTintManager;
  */
 public class AppBaseActivity extends AppCompatActivity {
 
+    public String TAG = this.getClass().getName();
+
     private SystemBarTintManager mTintManager;
 
     @Override
@@ -70,28 +72,26 @@ public class AppBaseActivity extends AppCompatActivity {
     protected void onStart() {
         UserView.getIt().show();
         super.onStart();
-        Log.e("hit","onStart");
+        Log.e("hit",TAG + " onStart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        UserView.getIt().show();
-        Log.e("hit","onResume");
+        Log.e("hit",TAG + " onResume");
     }
 
     @Override
     protected void onPause() {
         UserView.getIt().hide();
         super.onPause();
-        Log.e("hit","onPause");
+        Log.e("hit",TAG + " onPause");
     }
 
     @Override
     protected void onStop() {
-        UserView.getIt().hide();
         super.onStop();
-        Log.e("hit","onStop");
+        Log.e("hit",TAG + " onStop");
     }
 
     public Context getContext() {
