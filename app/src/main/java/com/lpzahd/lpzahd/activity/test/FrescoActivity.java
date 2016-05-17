@@ -1,6 +1,5 @@
-package com.lpzahd.lpzahd.activity.rx;
+package com.lpzahd.lpzahd.activity.test;
 
-import android.content.res.AssetManager;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,8 +12,6 @@ import com.facebook.drawee.generic.RoundingParams;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.lpzahd.lpzahd.R;
-import com.lpzahd.lpzahd.util.AssetsUtil;
-import com.lpzahd.lpzahd.util.ContextUtil;
 
 public class FrescoActivity extends AppCompatActivity {
 

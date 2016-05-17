@@ -10,7 +10,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@android:color/background_dark"
-    tools:context="com.lpzahd.lpzahd.activity.rx.FrescoActivity">
+    tools:context="com.lpzahd.lpzahd.activity.test.FrescoActivity">
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/v1"

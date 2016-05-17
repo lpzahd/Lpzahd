@@ -1,4 +1,4 @@
-package com.lpzahd.lpzahd.activity.rx;
+package com.lpzahd.lpzahd.activity.test;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,7 +20,6 @@ import retrofit2.http.Path;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class RetrifitActivity extends AppCompatActivity {

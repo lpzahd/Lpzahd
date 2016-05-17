@@ -1,4 +1,4 @@
-package com.lpzahd.lpzahd.activity.rx;
+package com.lpzahd.lpzahd.activity.test;
 
 import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
@@ -8,12 +8,7 @@ import android.view.View;
 
 import com.lpzahd.lpzahd.R;
 
-import java.util.List;
-
-import retrofit2.Retrofit;
-import retrofit2.http.GET;
 import rx.Observable;
-import rx.Scheduler;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;

@@ -243,7 +243,7 @@ public class CardView extends FrameLayout {
     /**
      * next 延时默认时间
      */
-    private static final int NEXT_DELAY_TIME = 500;
+    private static final int NEXT_DELAY_TIME = 300;
     private long preTime;
 
     /**
@@ -260,9 +260,9 @@ public class CardView extends FrameLayout {
             // 检查操作时间，是否过短，导致动画执行尚未结束又开始新一轮了
             long currTime = System.currentTimeMillis();
             if(currTime - preTime > NEXT_DELAY_TIME) {
+                preTime = currTime;
                 goDown();
             }
-            preTime = currTime;
             return ;
         }
         if (isMove) {

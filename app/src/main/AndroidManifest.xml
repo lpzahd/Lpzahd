@@ -47,9 +47,10 @@
             -->
         </activity>
         <activity android:name=".activity.main.GuideActivity" />
-        <activity android:name=".activity.rx.RxActivity" />
-        <activity android:name=".activity.rx.RetrifitActivity" />
-        <activity android:name=".activity.rx.FrescoActivity"></activity>
+        <activity android:name=".activity.test.RxActivity" />
+        <activity android:name=".activity.test.RetrifitActivity" />
+        <activity android:name=".activity.test.FrescoActivity" />
+        <activity android:name=".activity.test.DatabindActivity"></activity>
     </application>
 
 </manifest>
