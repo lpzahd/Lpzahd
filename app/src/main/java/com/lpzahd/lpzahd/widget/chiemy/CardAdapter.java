@@ -3,15 +3,22 @@ package com.lpzahd.lpzahd.widget.chiemy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
-
 import com.lpzahd.lpzahd.R;
 
+/**
+ * 发现问题：
+ *      1. 界面没有更新，在伟大的小米机型上
+ *  暂时修改方式：
+ *      不在复用view，直接重新生成view
+ * @param <T>
+ */
 public abstract class CardAdapter<T> extends BaseAdapter {
 
     protected final Context mContext;
@@ -31,6 +38,8 @@ public abstract class CardAdapter<T> extends BaseAdapter {
         }
     }
 
+    private Handler handler = new Handler(Looper.getMainLooper());
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         FrameLayout wrapper = (FrameLayout) convertView;
@@ -43,12 +52,16 @@ public abstract class CardAdapter<T> extends BaseAdapter {
             wrapper.addView(cardView);
         } else {
             cardView = wrapper.getChildAt(0);
-            convertedCardView = getCardView(position, cardView, wrapper);
+            convertedCardView = getCardView(position, null, wrapper);
+
             //要先删除，然后再添加，否则界面不更新
-            wrapper.removeView(cardView);
-            wrapper.addView(convertedCardView);
-            if (convertedCardView != cardView) {
+            if(cardView == convertedCardView) {
+
+            } else {
+                wrapper.removeView(cardView);
+                wrapper.addView(convertedCardView);
             }
+
         }
         return wrapper;
     }

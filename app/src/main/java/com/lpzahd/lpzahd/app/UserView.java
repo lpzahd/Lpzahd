@@ -73,7 +73,9 @@ public class UserView {
         }
 
         WindowManager.LayoutParams wParams = new WindowManager.LayoutParams();
-        wParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        // 在某些机型上需要悬浮窗权限设置，比如小米
+//        wParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+        wParams.type = WindowManager.LayoutParams.TYPE_TOAST;
 //        WindowManager.LayoutParams.TYPE_APPLICATION
         wParams.format = PixelFormat.TRANSLUCENT; // 透明
         wParams.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
@@ -153,12 +155,21 @@ public class UserView {
                 0.1f, 1.0f);
 
         AnimatorSet animSet = new AnimatorSet();
-        animSet.play(anim1).with(anim2);
-        animSet.play(anim2).with(anim3);
-        animSet.play(anim4).after(anim3);
-        animSet.play(anim5).after(anim3);
-        animSet.play(anim6).after(anim3);
-        animSet.setDuration(1000);
+
+        if(userHead.getDrawable() != null) {
+            animSet.play(anim1).with(anim2);
+            animSet.play(anim2).with(anim3);
+            animSet.play(anim4).after(anim3);
+            animSet.play(anim5).after(anim3);
+            animSet.play(anim6).after(anim3);
+            animSet.setDuration(1000);
+        } else {
+            // 总感觉别扭
+            userHead.setImageDrawable(drawable);
+            animSet.play(anim4).with(anim5);
+            animSet.play(anim5).with(anim6);
+            animSet.setDuration(500);
+        }
         animSet.start();
 
         anim3.addListener(new AnimatorListenerAdapter() {

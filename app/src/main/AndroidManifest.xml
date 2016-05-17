@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".app.LpzahdApp"
@@ -46,7 +47,9 @@
             -->
         </activity>
         <activity android:name=".activity.main.GuideActivity" />
-        <activity android:name=".activity.rx.RxActivity"></activity>
+        <activity android:name=".activity.rx.RxActivity" />
+        <activity android:name=".activity.rx.RetrifitActivity" />
+        <activity android:name=".activity.rx.FrescoActivity"></activity>
     </application>
 
 </manifest>

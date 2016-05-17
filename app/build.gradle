@@ -19,6 +19,13 @@ android {
         }
     }
 
+    packagingOptions {
+        exclude 'META-INF/maven/com.nineoldandroids/library/pom.xml'
+        exclude 'META-INF/maven/com.nineoldandroids/library/pom.properties'
+//        exclude 'META-INF/maven/com.belerweb/pinyin4j/pom.xml'
+//        exclude 'META-INF/maven/com.belerweb/pinyin4j/pom.properties'
+    }
+
 }
 
 buildscript {
@@ -66,7 +73,7 @@ dependencies {
     apt 'com.jakewharton:butterknife-compiler:8.0.1'
     // 沉浸式状态栏
     compile 'com.readystatesoftware.systembartint:systembartint:1.0.3'
-    compile files('src/main/libs/nineoldandroids-2.4.0.jar')
+//    compile files('src/main/libs/nineoldandroids-2.4.0.jar')
 
     // 迷之库
     compile 'io.reactivex:rxandroid:1.2.0'
@@ -76,4 +83,25 @@ dependencies {
 
     // 网络框架
     compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'   // 与 retrofit版本保持一致
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.2'   // 与 retrofit版本保持一致
+    compile 'com.squareup.okhttp3:okhttp:3.2.0'
+
+    // 图片加载框架
+    compile 'com.facebook.fresco:fresco:0.10.0'
+
+    compile "com.facebook.fresco:imagepipeline-okhttp3:0.10.0+"
+
+    // If your app supports Android versions before Ice Cream Sandwich (API level 14)
+    compile 'com.facebook.fresco:animated-base-support:0.10.0'
+
+    // For animated GIF support
+    compile 'com.facebook.fresco:animated-gif:0.10.0'
+
+    // For WebP support, including animated WebP
+    compile 'com.facebook.fresco:animated-webp:0.10.0'
+    compile 'com.facebook.fresco:webpsupport:0.10.0'
+
+    // For WebP support, without animations
+    compile 'com.facebook.fresco:webpsupport:0.10.0'
 }

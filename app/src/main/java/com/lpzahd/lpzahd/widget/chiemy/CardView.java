@@ -26,6 +26,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.MotionEvent;
@@ -148,6 +149,8 @@ public class CardView extends FrameLayout {
             addViewInLayout(view, 0, params);
 
             mNextAdapterPosition += 1;
+
+            invalidate();
         }
         // requestLayout();
     }
@@ -227,25 +230,57 @@ public class CardView extends FrameLayout {
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (isMove) {
-                    downY = -1;
-
-                    // 如果拖动范围小于view本身一半则回复状态
-                    float tranY = ViewHelper.getTranslationY(topView);
-                    int minHeight = topView.getHeight() / 3;
-                    if(tranY < minHeight) {
-                        final int topMargin = (mMaxVisible - 1) * itemSpace;
-                        ViewPropertyAnimator
-                                .animate(topView)
-                                .translationY(topMargin).scaleX(getChildScaleX(0))
-                                .setListener(null).setDuration(400);
-                    } else {
-                        goDown();
-                    }
-                }
+                next(true);
                 break;
         }
         return super.onTouchEvent(event);
+    }
+
+    public void next() {
+        next(false);
+    }
+
+    /**
+     * next 延时默认时间
+     */
+    private static final int NEXT_DELAY_TIME = 500;
+    private long preTime;
+
+    /**
+     * next
+     * @param checkPosition 是否检查需要当前位置撤回
+     */
+    private void next(boolean checkPosition) {
+        final View topView = getChildAt(getChildCount() - 1);
+        if(topView == null) {
+            return ;
+        }
+
+        if(!checkPosition) {
+            // 检查操作时间，是否过短，导致动画执行尚未结束又开始新一轮了
+            long currTime = System.currentTimeMillis();
+            if(currTime - preTime > NEXT_DELAY_TIME) {
+                goDown();
+            }
+            preTime = currTime;
+            return ;
+        }
+        if (isMove) {
+            downY = -1;
+
+            // 如果拖动范围小于view本身一半则回复状态
+            float tranY = ViewHelper.getTranslationY(topView);
+            int minHeight = topView.getHeight() / 3;
+            if(tranY < minHeight) {
+                final int topMargin = (mMaxVisible - 1) * itemSpace;
+                ViewPropertyAnimator
+                        .animate(topView)
+                        .translationY(topMargin).scaleX(getChildScaleX(0))
+                        .setListener(null).setDuration(400);
+            } else {
+                goDown();
+            }
+        }
     }
 
     /**

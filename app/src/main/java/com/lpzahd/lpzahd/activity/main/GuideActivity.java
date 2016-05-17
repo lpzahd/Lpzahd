@@ -7,25 +7,21 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import com.andexert.library.RippleView;
 import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
+import com.lpzahd.lpzahd.activity.rx.FrescoActivity;
+import com.lpzahd.lpzahd.activity.rx.RetrifitActivity;
 import com.lpzahd.lpzahd.activity.rx.RxActivity;
 import com.lpzahd.lpzahd.widget.chiemy.CardAdapter;
 import com.lpzahd.lpzahd.widget.chiemy.CardView;
 import com.zhy.autolayout.utils.AutoUtils;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -104,7 +100,7 @@ public class GuideActivity extends AppBaseActivity implements View.OnClickListen
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.fab) {
-
+            cardView.next();
         }
     }
 
@@ -152,14 +148,14 @@ public class GuideActivity extends AppBaseActivity implements View.OnClickListen
             }
 
             holder.guideTitle.setText(mData.get(position).title);
-            holder.ripple.setOnClickListener(new CardClickListener(position));
+            holder.ripple.setOnRippleCompleteListener(new CardClickListener(position));
 
             return convertView;
         }
 
     }
 
-    public class CardClickListener implements View.OnClickListener {
+    public class CardClickListener implements RippleView.OnRippleCompleteListener {
 
         private int position;
 
@@ -168,9 +164,13 @@ public class GuideActivity extends AppBaseActivity implements View.OnClickListen
         }
 
         @Override
-        public void onClick(View v) {
+        public void onComplete(RippleView v) {
             if(position == 0) {
                 startActivity(new Intent(GuideActivity.this, RxActivity.class));
+            } else if(position == 1) {
+                startActivity(new Intent(GuideActivity.this, RetrifitActivity.class));
+            } else if(position == 2) {
+                startActivity(new Intent(GuideActivity.this, FrescoActivity.class));
             }
         }
     }
