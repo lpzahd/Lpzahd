@@ -2,8 +2,27 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_test"
+        android:icon="@mipmap/icon_01"
+        android:orderInCategory="70"
+        android:title="A"
+        app:showAsAction="withText" />
+    <item
+        android:id="@+id/action_edit"
+        android:icon="@mipmap/icon_02"
+        android:orderInCategory="80"
+        android:title="A"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_share"
+        android:icon="@mipmap/icon_03"
+        android:orderInCategory="90"
+        android:title="B"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_settings"
+        android:icon="@mipmap/icon_04"
         android:orderInCategory="100"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
+        android:title="C"
+        app:showAsAction="always" />
 </menu>

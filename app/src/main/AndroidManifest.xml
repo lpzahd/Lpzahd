@@ -50,7 +50,8 @@
         <activity android:name=".activity.test.RxActivity" />
         <activity android:name=".activity.test.RetrifitActivity" />
         <activity android:name=".activity.test.FrescoActivity" />
-        <activity android:name=".activity.test.DatabindActivity"></activity>
+        <activity android:name=".activity.test.DatabindActivity" />
+        <activity android:name=".activity.test.NoteActivity" />
     </application>
 
 </manifest>

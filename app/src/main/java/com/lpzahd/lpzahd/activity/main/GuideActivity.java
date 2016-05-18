@@ -16,6 +16,7 @@ import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.activity.base.AppBaseActivity;
 import com.lpzahd.lpzahd.activity.test.DatabindActivity;
 import com.lpzahd.lpzahd.activity.test.FrescoActivity;
+import com.lpzahd.lpzahd.activity.test.NoteActivity;
 import com.lpzahd.lpzahd.activity.test.RetrifitActivity;
 import com.lpzahd.lpzahd.activity.test.RxActivity;
 import com.lpzahd.lpzahd.widget.chiemy.CardAdapter;
@@ -32,6 +33,9 @@ import butterknife.ButterKnife;
  * 引导页面却不能返回, 做成换种概念
  *  1.选择当前是否最好？（怎么表述自己才能记住？）
  *  2.任务模式？（限制数量，每天给与固定数量的选择）
+ *
+ *
+ *  发现问题： 太卡了 （绘制重叠引起的）
  */
 public class GuideActivity extends AppBaseActivity implements View.OnClickListener {
 
@@ -178,6 +182,10 @@ public class GuideActivity extends AppBaseActivity implements View.OnClickListen
                 startActivity(new Intent(GuideActivity.this, FrescoActivity.class));
             } else if(position == 3) {
                 startActivity(new Intent(GuideActivity.this, DatabindActivity.class));
+            } else if(position == 4) {
+                startActivity(new Intent(GuideActivity.this, NoteActivity.class));
+            } else if(position == 5) {
+                startActivity(new Intent(GuideActivity.this, MainActivity.class));
             }
         }
     }
