@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,11 +19,22 @@ import android.widget.ImageView;
 
 import com.lpzahd.lpzahd.R;
 import com.lpzahd.lpzahd.util.img.DrawableUtil;
+import com.zhy.autolayout.utils.L;
+
+import java.util.concurrent.TimeUnit;
+
+import rx.Observable;
+import rx.Scheduler;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 /**
  * Created by 迪 on 2016/5/8.
  */
 public class UserView {
+
+    private static final long DEFAULT_HIDE_TIME = 500;
 
     public static int WIDHT = App.SCREEN_WIDTH / 8;
     public static int HEIGHT = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -42,6 +54,11 @@ public class UserView {
      * contentview 是否显示
      */
     private boolean isShow;
+
+    /**
+     * 即将hide
+     */
+    private boolean isHiding;
 
     /**
      * contentview 是否加入窗口
@@ -109,13 +126,31 @@ public class UserView {
         if(!isShow) {
             isShow = true;
             contentView.setVisibility(View.VISIBLE);
+            isHiding = false;
         }
     }
 
     public void hide() {
         if(isShow) {
             isShow = false;
-            contentView.setVisibility(View.GONE);
+            Observable.timer(DEFAULT_HIDE_TIME, TimeUnit.MILLISECONDS)
+                    .doOnSubscribe(new Action0() {
+                        @Override
+                        public void call() {
+                            isHiding = true;
+                        }
+                    })
+                    .subscribeOn(AndroidSchedulers.mainThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Action1<Long>() {
+                        @Override
+                        public void call(Long aLong) {
+                            if(isHiding) {
+                                contentView.setVisibility(View.GONE);
+                                isHiding = false;
+                            }
+                        }
+                    });
         }
     }
 
